@@ -1,0 +1,13 @@
+{
+  "name": "cydex",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cydex adaptive certification learning platform",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
