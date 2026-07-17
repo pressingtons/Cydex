@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#07110f" />
-    <title>Cydex — Learn. Practice. Certify.</title>
-    <meta name="description" content="An adaptive certification study platform for cybersecurity and IT careers." />
+    <title>Cydex - Learn. Practice. Certify.</title>
+    <meta name="description" content="Objective-driven certification learning for cybersecurity and IT careers." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -15,63 +15,77 @@
     <div class="noise"></div>
     <div class="app-shell">
       <aside class="sidebar" aria-label="Main navigation">
-        <a class="brand" href="#dashboard" aria-label="Cydex home"><span class="brand-mark">C</span><span>CYDEX</span></a>
-        <div class="profile-card">
-          <div class="avatar">AP</div>
-          <div><strong>Alex Parker</strong><span>Security+ Candidate</span></div>
-          <button class="icon-button" aria-label="Account settings">•••</button>
-        </div>
+        <button class="brand brand-button" data-action="show-view" data-view="dashboard" aria-label="Cydex home"><span class="brand-mark">C</span><span>CYDEX</span></button>
+        <button class="profile-card profile-trigger" data-action="open-profile" aria-label="Open profile settings">
+          <span class="avatar" id="avatarInitials">AP</span>
+          <span class="profile-copy"><strong id="profileName">Alex Parker</strong><span id="profileRole">Security+ Candidate</span></span>
+          <span class="profile-more" aria-hidden="true">...</span>
+        </button>
         <nav>
-          <a class="nav-link active" href="#dashboard" data-view="dashboard"><span>◈</span>Command Center</a>
-          <a class="nav-link" href="#path" data-view="path"><span>⌘</span>Learning Path</a>
-          <a class="nav-link" href="#practice" data-view="practice"><span>›_</span>Practice Terminal</a>
-          <a class="nav-link" href="#review" data-view="review"><span>↻</span>Recall Queue <b id="reviewCount">12</b></a>
-          <a class="nav-link" href="#simulator" data-view="simulator"><span>▣</span>Exam Simulator</a>
+          <button class="nav-link active" data-action="show-view" data-view="dashboard"><span>O</span>Command Center</button>
+          <button class="nav-link" data-action="show-view" data-view="path"><span>#</span>Learning Path</button>
+          <button class="nav-link" data-action="show-view" data-view="practice"><span>&gt;_</span>Practice Terminal</button>
+          <button class="nav-link" data-action="show-view" data-view="review"><span>R</span>Recall Queue <b id="reviewCount">12</b></button>
+          <button class="nav-link" data-action="show-view" data-view="simulator"><span>[]</span>Exam Simulator</button>
         </nav>
         <div class="sidebar-bottom">
-          <div class="streak-card"><span class="flame">✦</span><div><strong><span id="streakCount">7</span> day streak</strong><small>Study today to protect it.</small></div></div>
-          <button class="outline-button" id="resetProgress">Reset demo progress</button>
-          <a class="support" href="mailto:hello@cydex.dev">? Get support</a>
+          <div class="streak-card"><span class="flame">*</span><div><strong><span id="streakCount">7</span> day streak</strong><small id="streakMessage">Study today to protect it.</small></div></div>
+          <button class="outline-button" data-action="reset-progress">Reset study progress</button>
+          <button class="support support-button" data-action="open-help">? Get support</button>
         </div>
       </aside>
 
       <main>
         <header class="topbar">
-          <button class="mobile-menu" aria-label="Open menu">☰</button>
+          <button class="mobile-menu" data-action="toggle-menu" aria-label="Open menu">Menu</button>
           <div class="crumb"><span class="live-dot"></span> SYSTEM ONLINE <span>/</span> SECURITY+</div>
-          <div class="top-actions"><button class="icon-button notification" aria-label="Notifications">◌<i></i></button><button class="upgrade-button">Upgrade <span>↗</span></button></div>
+          <div class="top-actions">
+            <button class="icon-button sound-button" id="soundButton" data-action="toggle-sound" aria-label="Turn sounds on or off">Sound: on</button>
+            <button class="icon-button notification" data-action="open-notifications" aria-label="Notifications">o<i></i></button>
+            <button class="account-button" id="accountButton" data-action="open-auth">Sign up / Log in</button>
+            <button class="upgrade-button" data-action="open-plans">Upgrade <span>&nearr;</span></button>
+          </div>
         </header>
 
         <section id="dashboard" class="view active">
-          <div class="eyebrow">THURSDAY / JULY 16</div>
+          <div class="eyebrow" id="todayLabel">TODAY'S FOCUS</div>
           <div class="hero-row">
-            <div><h1>Ready to level up, Alex?</h1><p>Your clearest route to Security+ is waiting. One focused session at a time.</p></div>
+            <div><h1>Ready to level up, <span id="heroName">Alex</span>?</h1><p>Your clearest route to Security+ is waiting. One focused session at a time.</p></div>
             <div class="readiness"><span>EXAM READINESS</span><strong id="readinessValue">42%</strong><div class="progress"><i id="readinessBar"></i></div><small>Target: 80% to schedule</small></div>
           </div>
 
           <section class="mission-card scan-line">
-            <div class="mission-copy"><div class="section-label"><span class="signal">◉</span> TODAY'S MISSION</div><h2>Master encryption fundamentals</h2><p>Continue from Objective 1.2 · Cryptographic Concepts</p><div class="mission-meta"><span>◷ 12 min</span><span>▤ 3 lessons</span><span>◎ +80 XP</span></div></div>
-            <button class="primary-button" data-action="start-mission">Begin session <span>→</span></button>
+            <div class="mission-copy"><div class="section-label"><span class="signal">o</span> TODAY'S MISSION</div><h2>Master encryption fundamentals</h2><p>Continue from Objective 1.2 &middot; Cryptographic Concepts</p><div class="mission-meta"><span>12 min</span><span>3 lessons</span><span>Up to +80 XP</span></div></div>
+            <button class="primary-button" data-action="start-mission">Begin session <span>&rarr;</span></button>
           </section>
 
           <div class="dashboard-grid">
-            <section class="panel path-panel"><div class="panel-heading"><div><span class="section-label">YOUR PATH</span><h2>Security+ SY0-701</h2></div><button class="text-button" data-view-link="path">View skill tree →</button></div><div class="skill-tree" id="skillTree"></div></section>
-            <section class="panel activity-panel"><div class="panel-heading"><div><span class="section-label">MOMENTUM</span><h2>Keep the signal strong</h2></div></div><div class="stat-grid"><div><strong id="xpValue">1,240</strong><span>XP earned</span></div><div><strong>3.6h</strong><span>This week</span></div></div><div class="week" aria-label="Study activity this week"><div class="done"><span>M</span><i>✓</i></div><div class="done"><span>T</span><i>✓</i></div><div class="done"><span>W</span><i>✓</i></div><div class="today"><span>T</span><i>●</i></div><div><span>F</span><i></i></div><div><span>S</span><i></i></div><div><span>S</span><i></i></div></div><p class="activity-tip">You're <strong>2 sessions</strong> ahead of your weekly pace.</p></section>
+            <section class="panel path-panel"><div class="panel-heading"><div><span class="section-label">YOUR PATH</span><h2>Security+ SY0-701</h2></div><button class="text-button" data-action="show-view" data-view="path">View skill tree &rarr;</button></div><div class="skill-tree" id="skillTree"></div></section>
+            <section class="panel activity-panel"><div class="panel-heading"><div><span class="section-label">MOMENTUM</span><h2>Keep the signal strong</h2></div></div><div class="stat-grid"><div><strong id="xpValue">1,240</strong><span>XP earned</span></div><div><strong id="levelValue">LVL 4</strong><span id="levelCaption">160 XP to level 5</span></div></div><div class="week" aria-label="Study activity this week"><div class="done"><span>M</span><i>+</i></div><div class="done"><span>T</span><i>+</i></div><div class="done"><span>W</span><i>+</i></div><div class="today"><span>T</span><i>o</i></div><div><span>F</span><i></i></div><div><span>S</span><i></i></div><div><span>S</span><i></i></div></div><p class="activity-tip" id="activityTip">You're <strong>2 sessions</strong> ahead of your weekly pace.</p></section>
           </div>
-          <section class="panel weak-panel"><div class="panel-heading"><div><span class="section-label">ADAPTIVE INTELLIGENCE</span><h2>Focus areas</h2><p>We found these objectives need a little more attention.</p></div><button class="text-button" data-action="practice-weak">Practice all →</button></div><div class="focus-list" id="focusList"></div></section>
+          <section class="panel weak-panel"><div class="panel-heading"><div><span class="section-label">ADAPTIVE INTELLIGENCE</span><h2>Focus areas</h2><p>We found these objectives need a little more attention.</p></div><button class="text-button" data-action="practice-weak">Practice all &rarr;</button></div><div class="focus-list" id="focusList"></div></section>
         </section>
 
         <section id="path" class="view"><div class="eyebrow">SECURITY+ / SY0-701</div><h1>Your certification map</h1><p class="intro">Every node maps to one exam objective. Clear a lesson, prove it with recall, and move forward.</p><div class="path-layout"><section class="panel objective-map" id="objectiveMap"></section><aside class="panel path-summary"><span class="section-label">CAMPAIGN STATUS</span><strong id="completedObjectives">3 / 18</strong><p>Objectives mastered</p><div class="progress"><i id="pathProgress"></i></div><hr><span class="section-label">NEXT UNLOCK</span><h3>Public Key Infrastructure</h3><p>Complete Cryptographic Concepts to continue.</p></aside></div></section>
 
-        <section id="practice" class="view"><div class="terminal-header"><div><span class="eyebrow">PRACTICE TERMINAL</span><h1>Test your instincts.</h1><p>Answer first. Then learn from the why.</p></div><div class="terminal-score"><span>SESSION SCORE</span><strong id="terminalScore">0 / 0</strong></div></div><section class="terminal-card"><div class="terminal-top"><span><i></i><i></i><i></i></span><span>cydex@practice:~$ adaptive-question</span><span id="questionTag">OBJ 1.2</span></div><div class="question-wrap" id="questionWrap"></div></section></section>
+        <section id="practice" class="view"><div class="terminal-header"><div><span class="eyebrow">PRACTICE TERMINAL</span><h1>Test your instincts.</h1><p>Correct answers strengthen mastery and earn XP. Misses cost 5 XP and enter your recall queue.</p></div><div class="terminal-score"><span>SESSION SCORE</span><strong id="terminalScore">0 / 0</strong></div></div><section class="terminal-card"><div class="terminal-top"><span><i></i><i></i><i></i></span><span>cydex@practice:~$ adaptive-question</span><span id="questionTag">OBJ 1.2</span></div><div class="question-wrap" id="questionWrap"></div></section></section>
 
-        <section id="review" class="view"><span class="eyebrow">SPACED REPETITION</span><h1>Recall queue</h1><p class="intro">A few deliberate minutes now protects what you learned later.</p><section class="panel recall-panel"><div class="recall-number"><span id="recallRemaining">12</span><small>due now</small></div><div><h2>Ready for a quick memory check?</h2><p>These cards are timed to your personal forgetting curve.</p></div><button class="primary-button" data-action="start-recall">Start recall <span>→</span></button></section></section>
+        <section id="review" class="view"><span class="eyebrow">SPACED REPETITION</span><h1>Recall queue</h1><p class="intro">A few deliberate minutes now protects what you learned later.</p><section class="panel recall-panel"><div class="recall-number"><span id="recallRemaining">12</span><small>due now</small></div><div><h2>Ready for a quick memory check?</h2><p>These cards are timed to your personal forgetting curve.</p></div><button class="primary-button" data-action="start-recall">Start recall <span>&rarr;</span></button></section></section>
 
-        <section id="simulator" class="view"><span class="eyebrow">EXAM SIMULATOR</span><h1>Practice under pressure.</h1><p class="intro">Timed, objective-mapped exams with detailed post-test debriefs.</p><div class="exam-grid"><article class="exam-card featured"><span class="badge">RECOMMENDED</span><h2>Security+ Readiness Check</h2><p>50 questions · 60 minutes · Targets your weak objectives</p><button class="primary-button" data-action="start-exam">Launch assessment <span>→</span></button></article><article class="exam-card"><span class="section-label">FULL MOCK EXAM</span><h2>Simulation 01</h2><p>90 questions · 90 minutes · Unlocks at 60% readiness</p><button class="outline-button" disabled>Locked · 42% / 60%</button></article></div></section>
+        <section id="simulator" class="view"><span class="eyebrow">EXAM SIMULATOR</span><h1>Practice under pressure.</h1><p class="intro">Timed, objective-mapped exams with detailed post-test debriefs.</p><div class="exam-grid"><article class="exam-card featured"><span class="badge">RECOMMENDED</span><h2>Security+ Readiness Check</h2><p>50 questions &middot; 60 minutes &middot; Targets your weak objectives</p><button class="primary-button" data-action="start-exam">Launch assessment <span>&rarr;</span></button></article><article class="exam-card"><span class="section-label">FULL MOCK EXAM</span><h2>Simulation 01</h2><p>90 questions &middot; 90 minutes &middot; Unlocks at 60% readiness</p><button class="outline-button" data-action="locked-exam">Locked &middot; <span id="unlockProgress">42% / 60%</span></button></article></div></section>
       </main>
     </div>
-    <div class="modal-backdrop" id="modalBackdrop" hidden><section class="lesson-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" aria-label="Close">×</button><span class="eyebrow" id="modalKicker">OBJECTIVE 1.2</span><h2 id="modalTitle">Encryption turns readable data into a secret.</h2><p id="modalText">Symmetric encryption uses the same secret key to encrypt and decrypt. It is fast and ideal for protecting large amounts of data.</p><div class="lesson-check"><span>CONCEPT CHECK</span><p>Which type of encryption is usually fastest for bulk data?</p><button data-check="wrong">Asymmetric encryption</button><button data-check="correct">Symmetric encryption</button></div><div id="checkFeedback"></div></section></div>
-    <div class="toast" id="toast" role="status"></div>
+
+    <div class="modal-backdrop" id="lessonModal" hidden><section class="lesson-modal" role="dialog" aria-modal="true" aria-labelledby="lessonTitle"><button class="modal-close" data-action="close-modal" data-modal="lessonModal" aria-label="Close lesson">&times;</button><span class="eyebrow">OBJECTIVE 1.2</span><h2 id="lessonTitle">Encryption turns readable data into a secret.</h2><p>Symmetric encryption uses the same secret key to encrypt and decrypt. It is fast and ideal for protecting large amounts of data.</p><div class="lesson-check"><span>CONCEPT CHECK</span><p>Which type of encryption is usually fastest for bulk data?</p><button data-action="lesson-answer" data-correct="false">Asymmetric encryption</button><button data-action="lesson-answer" data-correct="true">Symmetric encryption</button></div><div id="lessonFeedback"></div></section></div>
+
+    <div class="modal-backdrop" id="authModal" hidden><section class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authTitle"><button class="modal-close" data-action="close-modal" data-modal="authModal" aria-label="Close authentication">&times;</button><div class="auth-brand"><span class="brand-mark">C</span><span>CYDEX ID</span></div><h2 id="authTitle">Build your learning identity.</h2><p class="auth-intro">Your profile keeps your study momentum on this device. New members receive a welcome email when email delivery is configured.</p><div class="auth-tabs"><button class="auth-tab active" data-action="switch-auth" data-auth-mode="signup">Create account</button><button class="auth-tab" data-action="switch-auth" data-auth-mode="login">Log in</button></div><form id="signupForm" class="auth-form"><label>Display name<input name="name" maxlength="40" required placeholder="Your name" /></label><label>Email address<input name="email" type="email" required placeholder="you@example.com" /></label><label>Password<input name="password" type="password" minlength="8" required placeholder="At least 8 characters" /></label><button class="primary-button" type="submit">Create my Cydex ID <span>&rarr;</span></button></form><form id="loginForm" class="auth-form" hidden><label>Email address<input name="email" type="email" required placeholder="you@example.com" /></label><label>Password<input name="password" type="password" required placeholder="Your password" /></label><button class="primary-button" type="submit">Log in <span>&rarr;</span></button></form><p class="form-message" id="authMessage" role="status"></p></section></div>
+
+    <div class="modal-backdrop" id="profileModal" hidden><section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle"><button class="modal-close" data-action="close-modal" data-modal="profileModal" aria-label="Close profile">&times;</button><span class="eyebrow">YOUR LEARNING ID</span><h2 id="profileTitle">Profile and preferences</h2><form id="profileForm" class="auth-form"><label>Display name<input name="name" id="profileNameInput" maxlength="40" required /></label><label>Learning goal<select name="goal" id="goalInput"><option>CompTIA Security+</option><option>Cisco CCNA</option><option>Cybersecurity foundations</option></select></label><label class="toggle-label"><input id="soundInput" name="sound" type="checkbox" />Practice feedback sounds <span class="toggle-track"></span></label><button class="primary-button" type="submit">Save profile <span>&rarr;</span></button></form><button class="logout-button" data-action="logout">Log out of this device</button></section></div>
+
+    <div class="modal-backdrop" id="plansModal" hidden><section class="profile-modal plan-modal" role="dialog" aria-modal="true" aria-labelledby="planTitle"><button class="modal-close" data-action="close-modal" data-modal="plansModal" aria-label="Close plans">&times;</button><span class="eyebrow">CYDEX PREMIUM</span><h2 id="planTitle">Build skill, not busywork.</h2><p>Premium labs, full mock exams, and an always-on AI mentor are the next stage of Cydex. This demo keeps the core curriculum free.</p><button class="primary-button" data-action="open-help">Join the early access list <span>&rarr;</span></button></section></div>
+
+    <div class="modal-backdrop" id="notificationsModal" hidden><section class="profile-modal compact-modal" role="dialog" aria-modal="true" aria-labelledby="notificationsTitle"><button class="modal-close" data-action="close-modal" data-modal="notificationsModal" aria-label="Close notifications">&times;</button><span class="eyebrow">SIGNAL CENTER</span><h2 id="notificationsTitle">You're on track.</h2><p>Finish today's encryption session to extend your streak and protect your current study rhythm.</p><button class="primary-button" data-action="start-mission">Resume mission <span>&rarr;</span></button></section></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="app.js"></script>
   </body>
 </html>
