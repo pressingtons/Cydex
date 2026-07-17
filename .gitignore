@@ -1,0 +1,4 @@
+data/users.json
+data/email-outbox.json
+.env
+npm-debug.log*
