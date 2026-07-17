@@ -11,6 +11,16 @@ const outboxFile = path.join(dataDir, 'email-outbox.json');
 const sessions = new Map();
 const mimeTypes = { '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png' };
 
+async function loadLocalEnv() {
+  try {
+    const contents = await fs.readFile(path.join(root, '.env'), 'utf8');
+    for (const line of contents.split(/\r?\n/)) {
+      const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+      if (!match || process.env[match[1]]) continue;
+      process.env[match[1]] = match[2].replace(/^['"]|['"]$/g, '');
+    }
+  } catch (error) { if (error.code !== 'ENOENT') throw error; }
+}
 async function ensureDataFiles() { await fs.mkdir(dataDir, { recursive: true }); for (const file of [usersFile, outboxFile]) { try { await fs.access(file); } catch { await fs.writeFile(file, '[]\n', 'utf8'); } } }
 async function readJson(file) { await ensureDataFiles(); return JSON.parse(await fs.readFile(file, 'utf8')); }
 async function writeJson(file, value) { await ensureDataFiles(); await fs.writeFile(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
@@ -52,4 +62,5 @@ async function serveStatic(request, response, pathname) {
   try { const content = await fs.readFile(filePath); response.writeHead(200, { 'Content-Type': mimeTypes[path.extname(filePath)] || 'application/octet-stream' }); response.end(content); } catch (error) { response.writeHead(error.code === 'ENOENT' ? 404 : 500).end(error.code === 'ENOENT' ? 'Not found' : 'Server error'); }
 }
 const server = http.createServer(async (request, response) => { try { const pathname = new URL(request.url, `http://${request.headers.host}`).pathname; if (pathname.startsWith('/api/')) await handleApi(request, response, pathname); else await serveStatic(request, response, pathname); } catch (error) { sendJson(response, 500, { error: 'The server could not complete that request.' }); console.error(error); } });
-const port = Number(process.env.PORT || 3000); server.listen(port, () => console.log(`Cydex is running at http://localhost:${port}`));
+async function start() { await loadLocalEnv(); const port = Number(process.env.PORT || 3000); server.listen(port, () => console.log(`Cydex is running at http://localhost:${port}`)); }
+start();
