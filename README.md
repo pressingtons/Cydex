@@ -1,6 +1,6 @@
 # Cydex
 
-Cydex is an objective-driven cybersecurity certification study platform. This local MVP provides a terminal-style learning dashboard, mastery tracking, adaptive practice, fair XP feedback, a recall queue, account profiles, and local email-backed sign-up/login.
+Cydex is an objective-driven cybersecurity certification study platform. This local MVP provides a terminal-style learning dashboard, Cydex Mastery labs, a multi-certification catalog, adaptive practice, an XP vault, account profiles, and local email-backed sign-up/login.
 
 ## Run locally
 
@@ -16,7 +16,11 @@ Open [http://localhost:3000](http://localhost:3000). The server hosts the websit
 
 - Every navigation, modal, close button, backdrop click, and Escape key interaction
 - Micro-lesson concept check and adaptive practice questions
-- XP: +20 for a correct practice answer, -5 for a miss, +80 for a completed mission
+- Cydex Mastery: original objective briefing, retrieval practice, and interactive simulations
+- Core CompTIA and Cisco career-path catalog, including A+, Network+, Security+, CySA+, PenTest+, SecurityX, CCST, CCNA, Cybersecurity Associate, and DevNet Associate
+- XP: +20 for a new correct practice answer, -5 for a miss, +80 for a completed mission, and +50 for a lab
+- Anti-farming guardrails: 250 daily XP cap, one XP award per unique question each day, one-time objective/lab rewards, and server-persisted claim rules for signed-in accounts
+- XP Vault with original Cydex lab-pack unlocks; it never represents third-party products as Cydex-owned rewards
 - Mastery/readiness, recall queue, streaks, and browser-local progress persistence
 - Sound feedback, user profile, learning-goal preferences, and logout
 - Sign-up/login with Node's `scrypt` password hashing
@@ -24,7 +28,7 @@ Open [http://localhost:3000](http://localhost:3000). The server hosts the websit
 
 ## Email delivery
 
-Without configuration, Cydex queues welcome messages locally in `data/email-outbox.json`; it is excluded from Git. For real delivery, create a [Resend](https://resend.com) account, verify your sender domain, then copy `.env.example` to `.env` and add:
+Without configuration, Cydex queues welcome messages locally in `data/email-outbox.json`; it is excluded from Git. For real delivery on signup, create a [Resend](https://resend.com) account, verify your sender domain, then copy `.env.example` to `.env` and add:
 
 ```text
 RESEND_API_KEY=re_...

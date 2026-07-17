@@ -10,6 +10,8 @@ const usersFile = path.join(dataDir, 'users.json');
 const outboxFile = path.join(dataDir, 'email-outbox.json');
 const sessions = new Map();
 const mimeTypes = { '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png' };
+const dailyXpCap = 250;
+const rewardRules = { 'question:security-crypto-bulk': 20, 'question:security-integrity': 20, 'question:security-phishing': 20, 'objective:security-plus-1.2': 80, 'lab:gateway-baseline': 50 };
 
 async function loadLocalEnv() {
   try {
@@ -26,7 +28,9 @@ async function readJson(file) { await ensureDataFiles(); return JSON.parse(await
 async function writeJson(file, value) { await ensureDataFiles(); await fs.writeFile(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
 function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) { return new Promise((resolve, reject) => crypto.scrypt(password, salt, 64, (error, hash) => error ? reject(error) : resolve(`${salt}:${hash.toString('hex')}`))); }
 async function passwordsMatch(password, stored) { const [salt, expected] = stored.split(':'); const actual = await hashPassword(password, salt); return crypto.timingSafeEqual(Buffer.from(actual.split(':')[1], 'hex'), Buffer.from(expected, 'hex')); }
-function publicUser(user) { return { id: user.id, name: user.name, email: user.email, goal: user.goal, createdAt: user.createdAt }; }
+function dateKey() { return new Date().toISOString().slice(0, 10); }
+function normalizeProgress(progress = {}) { const next = { xp: 0, totalXp: 0, daily: { date: dateKey(), earned: 0, claims: {} }, ...progress }; next.daily = { date: dateKey(), earned: 0, claims: {}, ...(progress.daily || {}) }; if (next.daily.date !== dateKey()) next.daily = { date: dateKey(), earned: 0, claims: {} }; return next; }
+function publicUser(user) { return { id: user.id, name: user.name, email: user.email, goal: user.goal, createdAt: user.createdAt, progress: normalizeProgress(user.progress) }; }
 function createSession(user) { const token = crypto.randomBytes(32).toString('hex'); sessions.set(token, { userId: user.id, expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 7 }); return token; }
 function readBody(request) { return new Promise((resolve, reject) => { let body = ''; request.on('data', chunk => { body += chunk; if (body.length > 100000) { reject(new Error('Request body too large.')); request.destroy(); } }); request.on('end', () => { try { resolve(body ? JSON.parse(body) : {}); } catch { reject(new Error('Invalid JSON request.')); } }); request.on('error', reject); }); }
 function sendJson(response, status, payload) { response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); response.end(JSON.stringify(payload)); }
@@ -46,13 +50,22 @@ async function handleApi(request, response, pathname) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJson(response, 400, { error: 'Enter a valid email address.' });
     if (password.length < 8) return sendJson(response, 400, { error: 'Use a password with at least 8 characters.' });
     const users = await readJson(usersFile); if (users.some(user => user.email === email)) return sendJson(response, 409, { error: 'An account already exists for this email. Try logging in.' });
-    const user = { id: crypto.randomUUID(), name, email, passwordHash: await hashPassword(password), goal: 'CompTIA Security+', createdAt: new Date().toISOString() }; users.push(user); await writeJson(usersFile, users);
+    const user = { id: crypto.randomUUID(), name, email, passwordHash: await hashPassword(password), goal: 'CompTIA Security+', progress: normalizeProgress(), createdAt: new Date().toISOString() }; users.push(user); await writeJson(usersFile, users);
     const emailStatus = await sendWelcomeEmail(user); return sendJson(response, 201, { user: publicUser(user), sessionToken: createSession(user), emailStatus });
   }
   if (pathname === '/api/auth/login') {
     const email = String(input.email || '').trim().toLowerCase(); const password = String(input.password || ''); const users = await readJson(usersFile); const user = users.find(item => item.email === email);
     if (!user || !(await passwordsMatch(password, user.passwordHash))) return sendJson(response, 401, { error: 'Email or password is incorrect.' });
     return sendJson(response, 200, { user: publicUser(user), sessionToken: createSession(user), emailStatus: { delivery: 'existing' } });
+  }
+  if (pathname === '/api/progress/claim') {
+    const session = sessions.get(String(input.token || '')); if (!session || session.expiresAt < Date.now()) return sendJson(response, 401, { error: 'Your session has expired. Please log in again.' });
+    const claim = `${String(input.type || '')}:${String(input.key || '')}`; const amount = rewardRules[claim]; if (!amount) return sendJson(response, 400, { error: 'That reward is not recognized by Cydex.' });
+    const users = await readJson(usersFile); const user = users.find(item => item.id === session.userId); if (!user) return sendJson(response, 401, { error: 'Account not found.' });
+    user.progress = normalizeProgress(user.progress); if (user.progress.daily.claims[claim]) return sendJson(response, 200, { claimed: false, message: 'This reward was already claimed today.', progress: user.progress });
+    const earned = Math.min(amount, Math.max(0, dailyXpCap - user.progress.daily.earned)); if (!earned) return sendJson(response, 200, { claimed: false, message: 'Daily XP cap reached.', progress: user.progress });
+    user.progress.daily.claims[claim] = dateKey(); user.progress.daily.earned += earned; user.progress.xp += earned; user.progress.totalXp += earned; await writeJson(usersFile, users);
+    return sendJson(response, 200, { claimed: true, earned, progress: user.progress });
   }
   return sendJson(response, 404, { error: 'API route not found.' });
 }
