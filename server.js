@@ -11,7 +11,7 @@ const outboxFile = path.join(dataDir, 'email-outbox.json');
 const sessions = new Map();
 const mimeTypes = { '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png' };
 const dailyXpCap = 250;
-const rewardRules = { 'question:security-crypto-bulk': 20, 'question:security-integrity': 20, 'question:security-phishing': 20, 'objective:security-plus-1.2': 80, 'lab:gateway-baseline': 50 };
+const questionRewardKeys = new Set(['security-crypto-bulk', 'security-integrity', 'security-phishing', 'security-mfa', 'network-dhcp', 'network-vlan', 'network-dns', 'ap-ram', 'ap-backup', 'ccna-vlan', 'ccna-route', 'ccna-ssh', 'cyberops-log', 'cyberops-ioc', 'cloud-iaas', 'linux-perm', 'pentest-scope', 'devnet-api']);
 
 async function loadLocalEnv() {
   try {
@@ -29,7 +29,8 @@ async function writeJson(file, value) { await ensureDataFiles(); await fs.writeF
 function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) { return new Promise((resolve, reject) => crypto.scrypt(password, salt, 64, (error, hash) => error ? reject(error) : resolve(`${salt}:${hash.toString('hex')}`))); }
 async function passwordsMatch(password, stored) { const [salt, expected] = stored.split(':'); const actual = await hashPassword(password, salt); return crypto.timingSafeEqual(Buffer.from(actual.split(':')[1], 'hex'), Buffer.from(expected, 'hex')); }
 function dateKey() { return new Date().toISOString().slice(0, 10); }
-function normalizeProgress(progress = {}) { const next = { xp: 0, totalXp: 0, daily: { date: dateKey(), earned: 0, claims: {} }, ...progress }; next.daily = { date: dateKey(), earned: 0, claims: {}, ...(progress.daily || {}) }; if (next.daily.date !== dateKey()) next.daily = { date: dateKey(), earned: 0, claims: {} }; return next; }
+function normalizeProgress(progress = {}) { const next = { xp: 0, totalXp: 0, streak: 0, lastStudyDate: null, daily: { date: dateKey(), earned: 0, claims: {} }, ...progress }; next.daily = { date: dateKey(), earned: 0, claims: {}, ...(progress.daily || {}) }; if (next.daily.date !== dateKey()) next.daily = { date: dateKey(), earned: 0, claims: {} }; return next; }
+function rewardForClaim(type, key) { if (type === 'question' && questionRewardKeys.has(key)) return 20; if (type === 'objective' && /^[a-z0-9-]+-1\.2$/.test(key)) return 80; if (type === 'lab' && /^[a-z0-9-]+$/.test(key)) return 50; return 0; }
 function publicUser(user) { return { id: user.id, name: user.name, email: user.email, goal: user.goal, createdAt: user.createdAt, progress: normalizeProgress(user.progress) }; }
 function createSession(user) { const token = crypto.randomBytes(32).toString('hex'); sessions.set(token, { userId: user.id, expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 7 }); return token; }
 function readBody(request) { return new Promise((resolve, reject) => { let body = ''; request.on('data', chunk => { body += chunk; if (body.length > 100000) { reject(new Error('Request body too large.')); request.destroy(); } }); request.on('end', () => { try { resolve(body ? JSON.parse(body) : {}); } catch { reject(new Error('Invalid JSON request.')); } }); request.on('error', reject); }); }
@@ -60,7 +61,7 @@ async function handleApi(request, response, pathname) {
   }
   if (pathname === '/api/progress/claim') {
     const session = sessions.get(String(input.token || '')); if (!session || session.expiresAt < Date.now()) return sendJson(response, 401, { error: 'Your session has expired. Please log in again.' });
-    const claim = `${String(input.type || '')}:${String(input.key || '')}`; const amount = rewardRules[claim]; if (!amount) return sendJson(response, 400, { error: 'That reward is not recognized by Cydex.' });
+    const type = String(input.type || ''); const key = String(input.key || ''); const claim = `${type}:${key}`; const amount = rewardForClaim(type, key); if (!amount) return sendJson(response, 400, { error: 'That reward is not recognized by Cydex.' });
     const users = await readJson(usersFile); const user = users.find(item => item.id === session.userId); if (!user) return sendJson(response, 401, { error: 'Account not found.' });
     user.progress = normalizeProgress(user.progress); if (user.progress.daily.claims[claim]) return sendJson(response, 200, { claimed: false, message: 'This reward was already claimed today.', progress: user.progress });
     const earned = Math.min(amount, Math.max(0, dailyXpCap - user.progress.daily.earned)); if (!earned) return sendJson(response, 200, { claimed: false, message: 'Daily XP cap reached.', progress: user.progress });
