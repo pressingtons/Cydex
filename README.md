@@ -2,9 +2,10 @@
 
 An adaptive study dashboard for cybersecurity certification learners. The current MVP is a deployable, static frontend prototype featuring objective mapping, a study flow, adaptive question practice, spaced-repetition queue, progress persistence, and an exam-readiness experience.
 
-## Run locally
+## Run locally on cd where Cydex is installed --> local host
 
 ```bash
+cd "C:\Users\press\OneDrive\Documents\Cydex"
 npm run dev
 ```
 
